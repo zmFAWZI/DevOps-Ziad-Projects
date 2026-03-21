@@ -3,8 +3,8 @@ name: CI/CD Two-Tier Project
 on:
   push:
     # Trigger only when changes are made inside this specific project folder
-    paths:
-      - '1-Two-Tier-WebApp/**'
+    #paths:
+     # - '1-Two-Tier-WebApp/**'
     branches: [ "main" ]
 
 jobs:

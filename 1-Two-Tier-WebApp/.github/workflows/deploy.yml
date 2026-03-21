@@ -4,7 +4,7 @@ on:
   push:
     # Trigger only when changes are made inside this specific project folder
     paths:
-      - 'two-tier-project/**'
+      - '1-Two-Tier-WebApp/**'
     branches: [ "main" ]
 
 jobs:

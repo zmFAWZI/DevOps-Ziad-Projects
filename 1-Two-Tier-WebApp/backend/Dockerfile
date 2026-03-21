@@ -1,13 +1,27 @@
-FROM node:20-alpine 
+FROM node:20-alpine
+
+ENV NODE_ENV=production
 
 WORKDIR /app
 
-COPY package*.json .
+# Create non-root user first
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 
-RUN npm install --production
+# Copy dependency files
+COPY package*.json ./
 
+# Install only production dependencies
+RUN npm ci --omit=dev
+
+# Copy source code
 COPY . .
+
+# Give ownership to appuser
+RUN chown -R appuser:appgroup /app
+
+# Switch to non-root user
+USER appuser
 
 EXPOSE 5000
 
-CMD ["node","server.js"]
+CMD ["node", "server.js"]

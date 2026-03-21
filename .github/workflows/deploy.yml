@@ -3,7 +3,7 @@ name: CI/CD Two-Tier Project
 on:
   push:
     paths:
-      - '*-Two-Tier-WebApp/**'
+      - '1-Two-Tier-WebApp/**'
     branches: [ "main" ]
 
 jobs:

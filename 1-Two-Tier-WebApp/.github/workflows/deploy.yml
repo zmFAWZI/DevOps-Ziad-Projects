@@ -42,7 +42,7 @@ jobs:
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.EC2_HOST }}
-          username: ubuntu
+          username: ec2-user
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             # 1. Login to Docker Hub on the EC2
@@ -52,15 +52,13 @@ jobs:
             docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/two-tier-backend:latest
             docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/two-tier-frontend:latest
 
-            # 3. Stop and remove existing containers (ignore errors if they aren't running)
+            # 3. Stop and remove existing containers
             docker stop backend frontend || true
             docker rm backend frontend || true
 
             # 4. Run Backend
-            # NOTE: Replace <DB_PRIVATE_IP> with the Private IP of your Mongo EC2
             docker run -d \
               --name backend \
-              --network bridge \
               -p 5000:5000 \
               -e MONGO_URI=mongodb://${{ secrets.DB_PRIVATE_IP }}:27017/devops_db \
               ${{ secrets.DOCKER_HUB_USERNAME }}/two-tier-backend:latest
@@ -68,7 +66,6 @@ jobs:
             # 5. Run Frontend
             docker run -d \
               --name frontend \
-              --network bridge \
               -p 80:80 \
               -e REACT_APP_API_URL=http://${{ secrets.EC2_HOST }}:5000/api \
               ${{ secrets.DOCKER_HUB_USERNAME }}/two-tier-frontend:latest

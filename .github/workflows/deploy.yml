@@ -24,15 +24,19 @@ jobs:
         with:
           context: ./1-Two-Tier-WebApp/backend
           push: true
-          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/two-tier-backend:latest
-
+          tags: |
+            ${{ secrets.DOCKER_HUB_USERNAME }}/two-tier-backend:latest
+            ${{ secrets.DOCKER_HUB_USERNAME }}/two-tier-backend:${{ github.sha }}
       - name: Build & Push Frontend
         uses: docker/build-push-action@v5
         with:
           context: ./1-Two-Tier-WebApp/frontend
           push: true
-          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/two-tier-frontend:latest
-
+          tags: |
+            ${{ secrets.DOCKER_HUB_USERNAME }}/two-tier-frontend:latest
+            ${{ secrets.DOCKER_HUB_USERNAME }}/two-tier-frontend:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
   deploy-to-ec2:
     needs: build-and-push
     runs-on: ubuntu-latest

@@ -135,36 +135,9 @@ User Browser
 ## ⚙️ CI/CD Pipeline
 
 ```
-Push to main
-     │
-     ▼
-┌─────────────────────┐
-│   build-and-push    │
-│                     │
-│  1. Checkout code   │
-│  2. Login Docker Hub│
-│  3. Build backend   │
-│     image           │
-│  4. Push to Hub     │
-│     (latest + SHA)  │
-│  5. Build frontend  │
-│     image           │
-│  6. Push to Hub     │
-│     (latest + SHA)  │
-└────────┬────────────┘
-         │
-         ▼
-┌─────────────────────┐
-│   deploy-to-ec2     │
-│                     │
-│  1. SSH into EC2    │
-│  2. Pull new images │
-│  3. Stop old        │
-│     containers      │
-│  4. Create network  │
-│  5. Run backend     │
-│  6. Run frontend    │
-└─────────────────────┘
+
+<img width="1651" height="545" alt="diagram-export-3-22-2026-2_36_20-PM" src="https://github.com/user-attachments/assets/4fe3bab6-ae5c-4d54-815d-921b7563992c" />
+
 ```
 
 **Pipeline duration: ~1 min 20 sec** from push to live deployment.

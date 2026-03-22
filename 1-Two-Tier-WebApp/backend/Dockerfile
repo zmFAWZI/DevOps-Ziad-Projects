@@ -14,7 +14,6 @@ COPY . .
 
 RUN chown -R appuser:appgroup /app
 
-# Switch to non-root user
 USER appuser
 
 EXPOSE 5000

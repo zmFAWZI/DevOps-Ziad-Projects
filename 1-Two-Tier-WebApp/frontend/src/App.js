@@ -3,6 +3,9 @@ import React, { useState, useEffect } from 'react';
 function App() {
   const [count, setCount] = useState(0);
   const [loading, setLoading] = useState(false);
+  // In production, change 'localhost' to your Web EC2 Public IP
+  const API_URL = process.env.REACT_APP_API_URL || 'http://34.236.146.163:5000/api';
+
 
   useEffect(() => {
     fetch('/api/count')

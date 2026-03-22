@@ -93,7 +93,6 @@ A production-grade two-tier web application deployed on AWS, demonstrating core 
 
 ![CI/CD Pipeline](./cicd-diagram.png)
 
-**Pipeline duration: ~1 min 20 sec** from push to live deployment.
 
 ---
 

@@ -6,9 +6,7 @@ A production-grade two-tier web application deployed on AWS, demonstrating core 
 
 ## 🏗️ Architecture
 
-```
-![Architecture](./aws-diagram.png)
-```
+![AWS-Architecture](./aws-diagram.png)
 
 ---
 

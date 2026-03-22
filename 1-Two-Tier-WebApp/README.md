@@ -6,7 +6,7 @@ A production-grade two-tier web application deployed on AWS, demonstrating core 
 
 ## 🏗️ Architecture
 
-![AWS-Architecture](./aws-diagram.png)
+[!AWS-Architecture](aws-diagram.png)
 
 ---
 
@@ -110,6 +110,28 @@ A production-grade two-tier web application deployed on AWS, demonstrating core 
 
 ---
 
+## 📋 Prerequisites
+
+To run this project locally you need:
+
+| Tool | Purpose |
+|---|---|
+| [Docker](https://docs.docker.com/get-docker/) | Build and run containers |
+| [Docker Compose](https://docs.docker.com/compose/install/) | Run multi-container setup locally |
+| [Git](https://git-scm.com/) | Clone the repository |
+| [Node.js 20+](https://nodejs.org/) | Only if running without Docker |
+
+To deploy via CI/CD you also need:
+
+| Requirement | Purpose |
+|---|---|
+| AWS Account | Launch EC2 instances |
+| Docker Hub Account | Store Docker images |
+| GitHub Account | Host repo and run Actions |
+| EC2 key pair (.pem) | SSH access for deployment |
+
+---
+
 ## 🚀 How to Run Locally
 
 1. Clone the repo:
@@ -118,25 +140,26 @@ git clone https://github.com/zmFAWZI/DevOps-Ziad-Projects.git
 cd DevOps-Ziad-Projects/1-Two-Tier-WebApp
 ```
 
-2. Create `backend/.env`:
-```
-MONGO_URI=mongodb://localhost:27017/devops_db
-PORT=5000
+2. Start all services with one command:
+```bash
+docker-compose up --build
 ```
 
-3. Run MongoDB locally:
-```bash
-docker run -d -p 27017:27017 mongo:latest
+3. Open your browser at:
+```
+http://localhost
 ```
 
-4. Run backend:
+That's it — Docker Compose will spin up the frontend, backend, and MongoDB together automatically.
+
+To stop:
 ```bash
-cd backend && npm install && node server.js
+docker-compose down
 ```
 
-5. Run frontend:
+To stop and remove data:
 ```bash
-cd frontend && npm install && npm start
+docker-compose down -v
 ```
 
 ---
@@ -157,9 +180,6 @@ Running as root inside a container is a security risk. If the container is compr
 
 **Why tag images with git SHA?**
 `latest` always points to the newest image, but the SHA tag gives a traceable history — we can roll back to any previous deployment by its exact commit.
-
-
----
 
 ## 🔗 Connect
 

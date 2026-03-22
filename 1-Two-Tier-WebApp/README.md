@@ -92,6 +92,7 @@ A production-grade two-tier web application deployed on AWS, demonstrating core 
 ## ⚙️ CI/CD Pipeline
 
 ![CI/CD Pipeline](./cicd-diagram.png)
+
 ![Green CI/CD](./cicd-pipeline-green.png)
 
 ---

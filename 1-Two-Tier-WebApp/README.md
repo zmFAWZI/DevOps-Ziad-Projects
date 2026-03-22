@@ -7,50 +7,7 @@ A production-grade two-tier web application deployed on AWS, demonstrating core 
 ## 🏗️ Architecture
 
 ```
-User Browser
-     │
-     ▼
-┌─────────────────────────────────┐
-│         AWS Cloud               │
-│                                 │
-│  ┌──────────────────────────┐   │
-│  │   EC2 — Tier 1 (App)     │   │
-│  │                          │   │
-│  │  ┌──────────┐            │   │
-│  │  │ Frontend │ :80        │   │
-│  │  │  React   │            │   │
-│  │  │  + Nginx │            │   │
-│  │  └────┬─────┘            │   │
-│  │       │ proxy /api       │   │
-│  │  ┌────▼─────┐            │   │
-│  │  │ Backend  │ :5000      │   │
-│  │  │  Node.js │            │   │
-│  │  │  Express │            │   │
-│  │  └──────────┘            │   │
-│  └──────────────────────────┘   │
-│            │ private network    │
-│            │ port 27017         │
-│  ┌──────────────────────────┐   │
-│  │   EC2 — Tier 2 (DB)      │   │
-│  │                          │   │
-│  │  ┌──────────┐            │   │
-│  │  │ MongoDB  │            │   │
-│  │  │ Container│            │   │
-│  │  └──────────┘            │   │
-│  │  ┌──────────┐            │   │
-│  │  │  Docker  │            │   │
-│  │  │  Volume  │            │   │
-│  │  └──────────┘            │   │
-│  └──────────────────────────┘   │
-│                                 │
-└─────────────────────────────────┘
-         ▲
-         │ SSH + Deploy
-         │
-┌────────────────┐
-│ GitHub Actions │
-│   CI/CD        │
-└────────────────┘
+![Architecture](./aws-diagram.png)
 ```
 
 ---
@@ -65,7 +22,7 @@ User Browser
 | Containerization | Docker, Docker Hub |
 | CI/CD | GitHub Actions |
 | Cloud | AWS EC2 (Ubuntu 22.04, t2.micro) |
-| Networking | AWS Security Groups, Private VPC Network |
+| Networking | AWS VPC, Public + Private Subnets, Security Groups |
 
 ---
 
@@ -80,23 +37,25 @@ User Browser
 
 ### CI/CD — GitHub Actions
 - Triggered automatically on push to `main` branch
-- Path filter — only triggers when files inside `1-Two-Tier-WebApp/` change
+- Path filter — only triggers when files inside the project folder change
 - Two-stage pipeline: `build-and-push` → `deploy-to-ec2`
-- Docker images tagged with both `latest` and `git SHA` for versioning
-- Secrets managed via GitHub Actions Secrets (no hardcoded credentials)
+- Docker images tagged with both `latest` and git SHA for versioning
+- Secrets managed via GitHub Actions Secrets — no hardcoded credentials anywhere
 - SSH deployment to EC2 using `appleboy/ssh-action`
 
 ### AWS
 - Two separate EC2 instances — one per tier
-- Security groups configured to restrict port 27017 to Tier 1 private IP only
-- MongoDB never exposed to the internet
-- Private network communication between EC2 instances
+- Tier 1 in a public subnet — accessible by users
+- Tier 2 in a private subnet — no public IP, unreachable from the internet
+- Security groups restrict port 27017 to Tier 1 private IP only
+- All DB traffic stays inside the VPC, never touches the public internet
 
 ### Security
+- Database EC2 has no public IP — isolated in a private subnet
 - Backend container runs as non-root user (`appuser`)
 - Secrets injected at runtime via environment variables
 - `.gitignore` and `.dockerignore` prevent leaking sensitive files
-- MongoDB accessible only from Tier 1 private IP
+- MongoDB port 27017 restricted to Tier 1 private IP only
 
 ### Nginx
 - Serves React static files
@@ -134,11 +93,7 @@ User Browser
 
 ## ⚙️ CI/CD Pipeline
 
-```
-
-<img width="1651" height="545" alt="diagram-export-3-22-2026-2_36_20-PM" src="https://github.com/user-attachments/assets/4fe3bab6-ae5c-4d54-815d-921b7563992c" />
-
-```
+![CI/CD Pipeline](./cicd-diagram.png)
 
 **Pipeline duration: ~1 min 20 sec** from push to live deployment.
 
@@ -191,13 +146,16 @@ cd frontend && npm install && npm start
 ## 📌 Key Decisions
 
 **Why two EC2 instances?**
-Separating the app and database tiers mirrors real production architecture. The database is isolated on its own instance with restricted network access.
+Separating the app and database tiers mirrors real production architecture. The database is isolated on its own instance in a private subnet with no public IP.
+
+**Why private subnet for the database?**
+A private subnet has no internet gateway — even if the security group was misconfigured, the database would still be unreachable from the internet. Defense in depth.
 
 **Why Docker network instead of docker-compose?**
-In a two-EC2 setup, docker-compose can't span multiple machines. A custom Docker network (`appnet`) on the app EC2 allows the frontend and backend containers to communicate by name.
+In a two-EC2 setup, docker-compose can't span multiple machines. A custom Docker network (`appnet`) on the app EC2 allows the frontend and backend containers to communicate by container name.
 
 **Why non-root user in backend Dockerfile?**
 Running as root inside a container is a security risk. If the container is compromised, an attacker would have root access. A dedicated `appuser` limits the blast radius.
 
 **Why tag images with git SHA?**
-`latest` always points to the newest image, but the SHA tag gives us a traceable history — we can roll back to any previous deployment by its exact commit.
+`latest` always points to the newest image, but the SHA tag gives a traceable history — we can roll back to any previous deployment by its exact commit.

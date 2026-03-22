@@ -70,6 +70,8 @@ jobs:
               -e MONGO_URI=mongodb://${{ secrets.DB_PRIVATE_IP }}:27017/devops_db \
               ${{ secrets.DOCKER_HUB_USERNAME }}/two-tier-backend:latest
 
+            sleep 5
+            
             # 5. Run Frontend
             docker run -d \
               --name frontend \

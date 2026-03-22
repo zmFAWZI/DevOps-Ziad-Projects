@@ -157,3 +157,11 @@ Running as root inside a container is a security risk. If the container is compr
 
 **Why tag images with git SHA?**
 `latest` always points to the newest image, but the SHA tag gives a traceable history — we can roll back to any previous deployment by its exact commit.
+
+
+---
+
+## 🔗 Connect
+
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://linkedin.com/in/ziad-m-fawzi-abdalla-6a075a328)
+[![GitHub](https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/zmFAWZI)
